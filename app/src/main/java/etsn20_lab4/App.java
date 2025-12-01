@@ -3,12 +3,47 @@
  */
 package etsn20_lab4;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
+    // Fill args in gradle by running:
+    // gradle run --args "arg1 arg2 arg3"
+    public static void main(String[] args) throws IOException {
+        if (args.length != 3) {
+            System.out.println("You have entered an incorrect number of arguments.");
+            return;
+        }
+
+        var command  = args[0];
+        var pattern  = args[1];
+        var filename = args[2];
+        
+        if (!command.equals("search")) {
+            System.out.println("The only allowed command (first argument) is \"search\"");
+            return;
+        }
+
+        var path = Paths.get("text_files/", filename);
+        if (!Files.exists(path)){
+            System.out.println("A file with the provided filename does not exist.");
+            return;
+        }
+        
+        var lines = Files.readAllLines(path);
+        var matching_lines = linesContaining(pattern, lines);
+        
+        for (var line : matching_lines) {
+            System.out.println(line);
+        }
     }
 
-    public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+    private static List<String> linesContaining(String pattern, List<String> lines) {
+        return lines.stream()
+                    .filter(line -> line.toLowerCase().contains(pattern.toLowerCase()))
+                    .toList();
     }
 }
